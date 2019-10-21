@@ -6,7 +6,19 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost/server");
+mongoose 
+  .connect('mongodb://localhost/quickPumpServer', { useNewUrlParser: true })
+  .then((x) => {
+    let dbName = "QUICK PUMP";
+    console.log(`Connected to Mongo! Database name: "${dbName}"  ; BACKEND SERVER HAS STARTED`);
+    testUser();
+
+    
+
+  })
+  .catch((err) => {
+    console.error('Error connecting to mongo', err);
+  });
 
 const app = express();
 
