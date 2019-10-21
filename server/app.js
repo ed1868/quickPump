@@ -11,7 +11,6 @@ mongoose
   .then((x) => {
     let dbName = "QUICK PUMP";
     console.log(`Connected to Mongo! Database name: "${dbName}"  ; BACKEND SERVER HAS STARTED`);
-    testUser();
 
     
 
