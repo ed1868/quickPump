@@ -18,6 +18,17 @@ const uploadCloud = require('../public/javascripts/cloudinary');
 const router  = express.Router();
 let confirmationUrl;
 
+const login = (req, user) => new Promise((resolve, reject) => {
+  req.login(user, (err) => {
+    console.log(user);
+    if (err) {
+      reject(new Error('Something went wrong'));
+    } else {
+      resolve(user);
+    }
+  });
+});
+
 // NODEMAILER TRANSPORTER
 
 // const transporter = nodemailer.createTransport({
@@ -29,15 +40,20 @@ let confirmationUrl;
 
 // });
 
-// USER PROFILE ROUTE
+/////////////////////////////////////////////// USER PROFILE ROUTE////////////////////////////////////////////////////////////////////
+
 router.get('/user-profile', ensureLogin.ensureLoggedIn(), (req, res) => {
   const userID    = req.user.id;
   const username  = req.user.username;
+
+  console.log('CURRENT USER ID - ', userID);
+  console.log('CURRENT USERNAME - ', username);
   User.find({})
     .then((users) => {
-      res.render('auth/userProfile', {
-        users,  userId : req.user.id, username : req.user.username,
-      });
+
+      // res.render('auth/userProfile', {
+      //   users,  userId : req.user.id, username : req.user.username,
+      // });
     });
 });
 
@@ -60,25 +76,21 @@ router.get('/user-profile/:id/edit', ensureLogin.ensureLoggedIn(), (req, res) =>
 //   });
 // });
 
+////////////////////////////////////LOGIN ROUTE FOR BACK END ///////////////////////////////////////////
 
-// USER LOG IN ROUTES
-router.get('/login', (req, res, next) => {
-  res.render('auth/login', { message: req.flash('error') });
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user,  info) => {
+    if (err) { return next(err); }
+    if (!user) { return res.json({ message:'Unautharized ' }); }
+    req.logIn(user, (err) => {
+      if (err) { return res.status(500).json({ message: 'Error login' }); }
+      return res.status(200).json(user);
+    });
+  })(req, res, next);
 });
-
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/auth/login',
-  failureFlash: true,
-  passReqToCallback: true,
-}));
 
 
 // USER SIGN UP ROUTES WITH EMAIL CONFIRMATION
-router.get('/signup', (req, res, next) => {
-  res.render('auth/signup');
-});
-
 router.post('/signup', (req, res, next) => {
   if(!req.body){
 
@@ -151,10 +163,10 @@ router.get('/confirm/:confirmCode', (req, res) => {
   });
 });
 
-// USER LOG OUT ROUTE
+//////////////////////////////////////////////////////USER LOG OUT ROUTE//////////////////////////////////////////
 router.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.status(200).json({ message:'You Logged Out Sucessfully' });
 });
 
 module.exports = router;
