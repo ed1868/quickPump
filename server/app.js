@@ -1,10 +1,19 @@
-const express = require("express");
-const path = require("path");
-const favicon = require("serve-favicon");
-const logger = require("morgan");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+require('dotenv').config();
+
+const bodyParser   = require('body-parser');
+const cookieParser = require('cookie-parser');
+const express      = require('express');
+const favicon      = require('serve-favicon');
+const hbs          = require('hbs');
+const mongoose     = require('mongoose');
+const logger       = require('morgan');
+const path         = require('path');
+const ensureLogin    = require('connect-ensure-login');
+
+
+const session    = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const flash      = require('connect-flash');
 
 mongoose 
   .connect('mongodb://localhost/quickPumpServer', { useNewUrlParser: true })
@@ -36,6 +45,41 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+
+//HBS HELPERS
+hbs.registerHelper('ifUndefined', (value, options) => {
+  if (arguments.length < 2) { throw new Error('Handlebars Helper ifUndefined needs 1 parameter'); }
+  if (typeof value !== undefined) {
+    return options.inverse(this);
+  }
+  return options.fn(this);
+});
+
+hbs.registerHelper('tern', (value, options) => {
+  return !value ? '' : 'checked'; 
+});
+
+hbs.registerHelper('ifitsMe', (value, value1, options) => {
+  return value == value1 ? new hbs.SafeString(`<a href="/place/delete/opinionDelete/{{this._id}}/{{this.idPlace}}"><button type="button" id="deleteOpinion">Delete</button></a>`) : '';
+});
+
+
+app.use(session({
+  secret: process.env.SECRET,
+  resave: true,
+  saveUninitialized: true,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+}));
+app.use(flash());
+require('./passport')(app);
+
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
+
+
+//ROUTES SET UP 
 const index = require("./routes/index");
 app.use("/", index);
 
