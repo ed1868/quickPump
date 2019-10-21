@@ -12,6 +12,13 @@ const userSchema = new Schema({
   fitnessLevel: String,
   goalWeight: String,
   dueDate: String,
+  workouts: Array,
+  schedule: Array,
+  typeOfUser:{
+    type:String,
+    enum:['Trainer', 'Trainee'],
+    default: 'Trainee'
+  },
   status: {
     type: String,
     enum: ['Pending Confirmation', 'Active'],
