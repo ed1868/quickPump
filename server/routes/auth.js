@@ -55,7 +55,7 @@ router.get("/user-profile", ensureLogin.ensureLoggedIn(), (req, res) => {
   });
 });
 
-// USER EDIT ROUTES
+///////////////////////////////////////////////// USER EDIT ROUTES ///////////////////////////////////////////////// 
 
 router.get(
   "/user-profile/:id/edit",
@@ -67,15 +67,17 @@ router.get(
   }
 );
 
-// router.post('/user-profile', [ensureLogin.ensureLoggedIn(), uploadCloud.single('url')], (req, res) => {
-//   const username = req.body.username;
-//   const imgName   = req.body.imgName;
-//   const url       = req.file ? req.file.url : '';
+// uploadCloud.single('url')],       <---- Add to route below once cloudinary is ready
 
-//   User.findByIdAndUpdate(req.user.id, { username : req.body.username, imgName: req.body.imgName, url:url.replace(' ', '') }).then((user) => {
-//     res.redirect('/auth/user-profile');
-//   });
-// });
+router.post('/user-profile', [ensureLogin.ensureLoggedIn()],  (req, res) => {
+  const username = req.body.username;
+  const imgName   = req.body.imgName;
+  const url       = req.file ? req.file.url : '';
+
+  User.findByIdAndUpdate(req.user.id, { username : req.body.username, imgName: req.body.imgName, url:url.replace(' ', '') }).then((user) => {
+    res.redirect('/auth/user-profile');
+  });
+});
 
 ///////////////////////////////////////////////LOGIN ROUTE FOR BACK END ///////////////////////////////////////////
 
