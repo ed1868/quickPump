@@ -26,6 +26,10 @@ router.get("/all",ensureLogin.ensureLoggedIn(), (req, res, next) => {
 
 /////////////////////////////////////////////////////////////////ADD A WORKOUT (IF TRAINER)//////////////////////////////////////////////////]
 
+router.get('/new', ensureLoggedIn() ,(req,res,next) => {
+  res.status(200).json({ message: "ya did good" });
+});
+
 router.post('/new', ensureLoggedIn(), (req,res,next) => {
   let {
     workoutName,
