@@ -1,5 +1,6 @@
 const express = require("express");
 const Workouts = require("../models/Workouts");
+const User = require('../models/User');
 const router = express.Router();
 
 
@@ -8,11 +9,11 @@ const router = express.Router();
 
 
 //////////////////////////////////////////////////////////////////// GET ALL WORKOUTS FROM LOGED IN USER(IF TRAINER) //////////////////////////////////////////
-router.get("/workouts",ensureLogin.ensureLoggedIn(), (req, res, next) => {
+router.get("/all",ensureLogin.ensureLoggedIn(), (req, res, next) => {
   let loggedInUser = req.user;
   let username = loggedInUser.username;
 
-  Workouts.find({username})
+  User.find({username})
     .then(user => {
       console.log(user.workouts);
     })
@@ -22,5 +23,53 @@ router.get("/workouts",ensureLogin.ensureLoggedIn(), (req, res, next) => {
       }
     });
 });
+
+/////////////////////////////////////////////////////////////////ADD A WORKOUT (IF TRAINER)//////////////////////////////////////////////////]
+
+router.post('/new', ensureLoggedIn(), (req,res,next) => {
+  let {
+    workoutName,
+    timeExpectedToComplete,
+    muscleGroup,
+    workout,
+  } = req.body;
+  let trainer = req.user.username;
+
+  console.log('WORKOUT NAME: ', workoutName);
+  console.log('WORKOUT Expected time met: ', timeExpectedToComplete);
+  console.log('WORKOUT Muscle Group: ', muscleGroup);
+  console.log('WORKOUT: ',workout);
+  console.log('TRAINER: ', trainer);
+
+  const newWorkout = new Workouts({
+    workoutName,
+    timeExpectedToComplete,
+    muscleGroup,
+    workoutName,
+    trainer
+  });
+
+  newWorkout.save()
+  .then(savedWorkout => {
+    console.log(savedWorkout);
+    let thePump = savedWorkout;
+    User.find({trainer})
+    .then(user => {
+      
+      user.workouts.push(thePump);
+      
+      console.log('NEW USER: ', user);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+
+  })
+  .catch(err => {
+    console.log(err);
+  });
+
+
+})
 
 module.exports = router;
