@@ -76,22 +76,38 @@ router.post('/new', ensureLoggedIn(), (req,res,next) => {
 
 });
 
-//////////////////////////////////////////////////////EDUIT SPECIFIC WORKOUT/////////////////////////
+//////////////////////////////////////////////////////EDIT SPECIFIC WORKOUT/////////////////////////
+
+router.get('/:id/edit', ensureLoggedIn(), (req,res,next) => {
+
+  //CHANGE THE RENDERING TO A RES.JSON WHEN CONNECTED TO REACT.JS
+  console.log('GET REQUEST SUCCEEDED FOR EDITING A ROUTE');
+
+});
 
 router.post('/:id/edit', ensureLoggedIn(), (req,res,next) => {
 
     let workoutId = req.params;
+    let update = {
+      workoutName,
+
+    }
 
     console.log('THIS IS THE WORKOUT ID : ', workoutId);
 
-    Workouts.findById({workoutId})
+    Workouts.findByIdAndUpdate(workoutId,{updatedWorkout})
     .then(foundWorkout => {
       console.log('THIS IS THE FOUND WORKOUT BY THAT ID : ' ,foundWorkout);
+
     }).catch(err => {
       if(err){
         console.log('NO WORKOUT FOUND BY THAT ID', err);
       }
     });
+
 });
+
+
+
 
 module.exports = router;
