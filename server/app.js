@@ -15,6 +15,7 @@ const session    = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const flash      = require('connect-flash');
 
+
 mongoose 
   .connect('mongodb://localhost/quickPumpServer', { useNewUrlParser: true })
   .then((x) => {
@@ -28,7 +29,37 @@ mongoose
     console.error('Error connecting to mongo', err);
   });
 
-const app = express();
+
+  const app = express();
+
+  
+//Adds connection to database using mongoose
+//for <dbuser>:replace with your username, <dbpassword>: replace with your password.
+//<DATABASE_URL>: replace with database url, example:ds234562.mlab.com:17283
+// mongoose.connect('mongodb://admin:root123@ds233288.mlab.com:33288/quickpump', {
+//   useMongoClient: true
+// }).then((x) => {
+//   let dbName = "QUICK PUMP";
+//   console.log(`Connected to Mongo! Database name: ${dbName} : BACKEND SERVER HAS STARTED`);
+//   app.all('/*', function(req, res, next) {
+//     // CORS headers
+//     res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
+//     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+//     // Set custom headers for CORS
+//     res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+//     if (req.method == 'OPTIONS') {
+//       res.status(200).end();
+//     } else {
+//       next();
+//     }
+//   });
+// }).catch((err) => {
+//   console.log('ERROR CONNECTING TO MONGO ----, ', err);
+// })
+//This enabled CORS, Cross-origin resource sharing (CORS) is a mechanism that allows restricted resources (e.g. fonts) 
+//on a web page to be requested from another domain outside the domain from which the first resource was served
+
+
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
